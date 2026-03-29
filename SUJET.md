@@ -7,9 +7,16 @@ Voici une décomposition détaillée des étapes à suivre pour réussir ce proj
 ## 1. Conception de la Base de Données
 C'est le cœur de votre backoffice. Pour un site d'information, vous avez besoin d'une structure flexible.
 
-* **Table `articles` :** `id`, `titre`, `slug` (pour l'URL rewriting), `chapeau` (résumé), `contenu` (corps du texte), `date_publication`, `image_principale`, `alt_image`, `id_categorie`.
-* **Table `categories` :** `id`, `nom`, `description`.
-* **Table `utilisateurs` :** Pour l'accès sécurisé au backoffice.
+* **Table `article` :** Contient les métadonnées globales. 
+    * `article_id`, `titre`, `slug`, `resume` (chapeau), `image_principale`, `date_publication`, `id_categorie`.
+* **Table `article_details` :** Permet de découper un article en plusieurs sections (ex: Introduction, Causes, Déroulement).
+    * `details_id`, `article_id` (clé étrangère), `sous_titre`, `contenu`, `slug_details`.
+* **Table `image` :** Gère l'iconographie liée spécifiquement à chaque section de l'article.
+    * `image_id`, `details_id` (clé étrangère), `path`, `alt_image`.
+* **Table `Categorie` :** Organise les contenus par thématique.
+    * `categorie_id`, `nom`, `slug_cat`.
+* **Table `user` :** Gère l'authentification sécurisée des administrateurs.
+    * `user_id`, `email`, `password`.
 
 ---
 
