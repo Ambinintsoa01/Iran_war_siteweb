@@ -127,9 +127,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     if (empty($errors)) {
         try {
-            $uploadDir = realpath(__DIR__ . '/../../uploads') ?: (__DIR__ . '/../../uploads');
-            if (!is_dir($uploadDir)) {
-                mkdir($uploadDir, 0777, true);
+            $uploadBase = __DIR__ . '/../../uploads';
+            if (!is_dir($uploadBase) && !mkdir($uploadBase, 0777, true)) {
+                $errors[] = "Impossible de créer le dossier d'upload.";
+            }
+            $uploadDir = realpath($uploadBase) ?: $uploadBase;
+            if (!is_dir($uploadDir) || !is_writable($uploadDir)) {
+                $errors[] = "Le dossier d'upload n'est pas accessible en écriture.";
+            }
+
+            if (!empty($errors)) {
+                throw new Exception('Blocage uploads');
             }
 
             $pdo->beginTransaction();
@@ -143,14 +151,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 $extMain = pathinfo($origMain, PATHINFO_EXTENSION);
                 $targetMain = 'main_' . uniqid() . ($extMain ? ('.' . $extMain) : '');
                 $fullMain = rtrim($uploadDir, '/\\') . DIRECTORY_SEPARATOR . $targetMain;
-                if (move_uploaded_file($tmpMain, $fullMain)) {
+                if (is_uploaded_file($tmpMain) && move_uploaded_file($tmpMain, $fullMain)) {
                     $imagePath = 'uploads/' . $targetMain;
                 } else {
                     $errors[] = "Échec de l'upload de l'image principale.";
                 }
             }
 
-            $insert = $pdo->prepare('INSERT INTO article (article_id, titre, slug, resume, image_principale, alt_image, id_categorie) VALUES (:id, :titre, :slug, :resume, :image, :alt, :categorie)');
+            $insert = $pdo->prepare('INSERT INTO article (article_id, titre, slug, resume, image_principale, alt_img, id_categorie) VALUES (:id, :titre, :slug, :resume, :image, :alt, :categorie)');
             $insert->execute([
                 ':id' => $articleId,
                 ':titre' => $titre,
@@ -182,13 +190,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             continue;
                         }
                         if ($_FILES['section_image']['error'][$index][$imgIdx] !== UPLOAD_ERR_OK) {
+                            $errors[] = "Échec de l'upload d'une image de section.";
                             continue;
                         }
                         $tmpName = $_FILES['section_image']['tmp_name'][$index][$imgIdx];
                         $ext = pathinfo($nameImg, PATHINFO_EXTENSION);
                         $targetName = 'img_' . uniqid() . ($ext ? ('.' . $ext) : '');
                         $targetPath = rtrim($uploadDir, '/\\') . DIRECTORY_SEPARATOR . $targetName;
-                        if (move_uploaded_file($tmpName, $targetPath)) {
+                        if (is_uploaded_file($tmpName) && move_uploaded_file($tmpName, $targetPath)) {
                             $imgId = generateImageId();
                             $alts = array_map('trim', explode(';', $section['image_alt'] ?? ''));
                             $altForImg = $alts[$imgIdx] ?? $section['image_alt'] ?? '';
@@ -206,12 +215,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            $pdo->commit();
-            header('Location: liste.php?success=created');
-            exit();
+            if (!empty($errors)) {
+                $pdo->rollBack();
+            } else {
+                $pdo->commit();
+                header('Location: liste.php?success=created');
+                exit();
+            }
         } catch (Exception $e) {
-            $pdo->rollBack();
-            $errors[] = 'Erreur lors de la sauvegarde : ' . $e->getMessage();
+            if ($pdo->inTransaction()) {
+                $pdo->rollBack();
+            }
+            if (empty($errors)) {
+                $errors[] = 'Erreur lors de la sauvegarde : ' . $e->getMessage();
+            }
         }
     }
 }
