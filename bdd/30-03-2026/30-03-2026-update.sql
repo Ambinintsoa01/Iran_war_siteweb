@@ -1,0 +1,1 @@
+ALTER TABLE menu ADD COLUMN menu_mere VARCHAR(255);
