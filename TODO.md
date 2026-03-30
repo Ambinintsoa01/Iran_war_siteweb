@@ -125,7 +125,7 @@
 - Créer un sidebar pour selectionner les categories
 - Utiliser des templates PHP pour éviter la répétition.
 
-### Page d'Accueil (Home - index.php)
+### Page d'Accueil (Home - public/index.php)
 - C'est le preview/preview du backoffice
 - Afficher tous les articles publiés en pleine page (style "Le Monde").
   - Afficher le contenu complet de l'article :
@@ -135,7 +135,7 @@
     - Date de publication
     - Catégorie
 
-### Page details (details.php)
+### Page details (Details - public/details.php)
 - C'est le preview/detail du backoffice
 - Afficher le contenu complet de l'article :
   - Titre (h1)
