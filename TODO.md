@@ -91,7 +91,7 @@
 - (Optionnel) Page pour changer le mot de passe de l'admin
 
 ### Preview
-- Une page qui affiche la page d'accueil publique
+- Une page qui affiche la page d'accueil publique (admin/preview.php)
 
 ## FRONTOFFICE (Partie Publique - Affichage pour les visiteurs)
 
