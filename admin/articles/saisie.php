@@ -47,6 +47,7 @@ $titre = '';
 $slug = '';
 $resume = '';
 $image = '';
+$imageAlt = '';
 $idCategorie = '';
 $sections = [[
     'sous_titre' => '',
@@ -55,35 +56,39 @@ $sections = [[
 ]];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titre = trim($_POST['titre'] ?? '');
+    $titre = $_POST['titre'] ?? '';
     $slug = trim($_POST['slug'] ?? '');
-    $resume = trim($_POST['resume'] ?? '');
+    $resume = $_POST['resume'] ?? '';
     $image = '';
+    $imageAlt = trim($_POST['image_alt'] ?? '');
     $idCategorie = trim($_POST['id_categorie'] ?? '');
     $sousTitres = $_POST['sous_titre'] ?? [];
     $contenus = $_POST['contenu'] ?? [];
     $imageAlts = $_POST['section_image_alt'] ?? [];
 
+    $titrePlain = trim(strip_tags($titre));
+    $resumePlain = trim(strip_tags($resume));
+
     $sections = [];
     $countSections = max(count($sousTitres), count($contenus));
     for ($i = 0; $i < $countSections; $i++) {
         $sections[] = [
-            'sous_titre' => trim($sousTitres[$i] ?? ''),
-            'contenu' => trim($contenus[$i] ?? ''),
+            'sous_titre' => $sousTitres[$i] ?? '',
+            'contenu' => $contenus[$i] ?? '',
             'image_alt' => trim($imageAlts[$i] ?? '')
         ];
     }
 
-    if ($titre === '') {
+    if ($titrePlain === '') {
         $errors[] = 'Le titre est requis.';
     }
 
-    if ($resume === '') {
+    if ($resumePlain === '') {
         $errors[] = 'Le résumé est requis.';
     }
 
     if ($slug === '') {
-        $slug = slugify($titre);
+        $slug = slugify($titrePlain ?: $titre);
     } else {
         $slug = slugify($slug);
     }
@@ -98,7 +103,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $hasSection = false;
     foreach ($sections as $section) {
-        if ($section['sous_titre'] !== '' || $section['contenu'] !== '') {
+        if (trim(strip_tags($section['sous_titre'])) !== '' || trim(strip_tags($section['contenu'])) !== '') {
             $hasSection = true;
             break;
         }
@@ -145,13 +150,14 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
 
-            $insert = $pdo->prepare('INSERT INTO article (article_id, titre, slug, resume, image_principale, id_categorie) VALUES (:id, :titre, :slug, :resume, :image, :categorie)');
+            $insert = $pdo->prepare('INSERT INTO article (article_id, titre, slug, resume, image_principale, alt_image, id_categorie) VALUES (:id, :titre, :slug, :resume, :image, :alt, :categorie)');
             $insert->execute([
                 ':id' => $articleId,
                 ':titre' => $titre,
                 ':slug' => $slug,
                 ':resume' => $resume,
                 ':image' => $imagePath,
+                ':alt' => $imageAlt,
                 ':categorie' => $idCategorie
             ]);
 
@@ -167,7 +173,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                     ':article' => $articleId,
                     ':titre' => $section['sous_titre'],
                     ':contenu' => $section['contenu'],
-                    ':slug' => slugify($section['sous_titre'] ?: ('section-' . ($index + 1)))
+                    ':slug' => slugify(trim(strip_tags($section['sous_titre'])) ?: ('section-' . ($index + 1)))
                 ]);
 
                 if (!empty($_FILES['section_image']['name'][$index]) && is_array($_FILES['section_image']['name'][$index])) {
@@ -248,7 +254,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <form method="post" novalidate enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="titre" class="form-label">Titre</label>
-                                <input type="text" class="form-control" id="titre" name="titre" value="<?php echo htmlspecialchars($titre, ENT_QUOTES, 'UTF-8'); ?>" required>
+                                <textarea class="form-control wysiwyg" id="titre" name="titre" rows="2" required><?php echo $titre; ?></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="slug" class="form-label">Slug (optionnel)</label>
@@ -257,11 +263,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                             <div class="mb-3">
                                 <label for="resume" class="form-label">Résumé</label>
-                                <textarea class="form-control" id="resume" name="resume" rows="3" required><?php echo htmlspecialchars($resume, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control wysiwyg" id="resume" name="resume" rows="4" required><?php echo $resume; ?></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="image_principale" class="form-label">Image principale (upload)</label>
                                 <input type="file" class="form-control" id="image_principale" name="image_principale" accept="image/*">
+                            </div>
+                            <div class="mb-3">
+                                <label for="image_alt" class="form-label">Texte alternatif de l'image principale</label>
+                                <input type="text" class="form-control" id="image_alt" name="image_alt" value="<?php echo htmlspecialchars($imageAlt, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Décrivez brièvement l'image">
                             </div>
                             <div class="mb-3">
                                 <label for="id_categorie" class="form-label">Catégorie</label>
@@ -282,11 +292,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                     <div class="border rounded p-3 mb-3 section-block" data-index="<?php echo $idx; ?>">
                                         <div class="mb-3">
                                             <label class="form-label">Sous-titre</label>
-                                            <input type="text" class="form-control" name="sous_titre[]" value="<?php echo htmlspecialchars($section['sous_titre'], ENT_QUOTES, 'UTF-8'); ?>">
+                                            <textarea class="form-control wysiwyg" name="sous_titre[]" rows="2"><?php echo $section['sous_titre']; ?></textarea>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Contenu</label>
-                                            <textarea class="form-control" name="contenu[]" rows="3"><?php echo htmlspecialchars($section['contenu'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                            <textarea class="form-control wysiwyg" name="contenu[]" rows="4"><?php echo $section['contenu']; ?></textarea>
                                         </div>
                                         <div class="row g-3">
                                             <div class="col-md-6">
@@ -311,8 +321,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </section>
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="../../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
+        const tinyConfig = {
+            selector: '.wysiwyg',
+            menubar: false,
+            plugins: 'link image lists code',
+            toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link image | code',
+            block_formats: 'Paragraphe=p;Titre 1=h1;Titre 2=h2;Titre 3=h3;Titre 4=h4;Citation=blockquote',
+            height: 220,
+            branding: false,
+            convert_urls: false,
+            readonly: false,
+        };
+        if (window.tinymce) {
+            tinymce.remove();
+            tinymce.init(tinyConfig);
+        }
+
         function liveSlug(text) {
             return text
                 .normalize('NFD')
@@ -347,11 +374,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Sous-titre</label>
-                    <input type="text" class="form-control" name="sous_titre[]">
+                    <textarea class="form-control wysiwyg" name="sous_titre[]" rows="2"></textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Contenu</label>
-                    <textarea class="form-control" name="contenu[]" rows="3"></textarea>
+                    <textarea class="form-control wysiwyg" name="contenu[]" rows="4"></textarea>
                 </div>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -365,6 +392,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             `;
             wrapper.appendChild(block);
+            if (window.tinymce) {
+                tinymce.remove();
+                tinymce.init(tinyConfig);
+            }
         });
 
         wrapper.addEventListener('click', (e) => {

@@ -85,6 +85,7 @@ $titre = $article['titre'];
 $slug = $article['slug'];
 $resume = $article['resume'];
 $image = $article['image_principale'];
+$imageAlt = $article['alt_image'] ?? '';
 $idCategorie = $article['id_categorie'];
 
 $detailsStmt = $pdo->prepare('SELECT details_id, sous_titre, contenu, slug_details FROM article_details WHERE article_id = ? ORDER BY details_id');
@@ -113,10 +114,11 @@ if (!empty($detailIdsList)) {
 }
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $titre = trim($_POST['titre'] ?? '');
+    $titre = $_POST['titre'] ?? '';
     $slug = trim($_POST['slug'] ?? '');
-    $resume = trim($_POST['resume'] ?? '');
+    $resume = $_POST['resume'] ?? '';
     $image = trim($_POST['image_principale'] ?? '');
+    $imageAlt = trim($_POST['image_alt'] ?? '');
     $idCategorie = trim($_POST['id_categorie'] ?? '');
     $detailIds = $_POST['detail_id'] ?? [];
     $sousTitres = $_POST['sous_titre'] ?? [];
@@ -124,16 +126,19 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $imageAlts = $_POST['section_image_alt'] ?? [];
     $removeIds = $_POST['section_remove'] ?? [];
 
-    if ($titre === '') {
+    $titrePlain = trim(strip_tags($titre));
+    $resumePlain = trim(strip_tags($resume));
+
+    if ($titrePlain === '') {
         $errors[] = 'Le titre est requis.';
     }
 
-    if ($resume === '') {
+    if ($resumePlain === '') {
         $errors[] = 'Le résumé est requis.';
     }
 
     if ($slug === '') {
-        $slug = slugify($titre);
+        $slug = slugify($titrePlain ?: $titre);
     } else {
         $slug = slugify($slug);
     }
@@ -148,10 +153,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     $hasSection = false;
     foreach ($sousTitres as $idx => $st) {
-        $st = trim($st ?? '');
-        $ct = trim($contenus[$idx] ?? '');
+        $st = $st ?? '';
+        $ct = $contenus[$idx] ?? '';
         $removed = in_array($detailIds[$idx] ?? '', $removeIds, true);
-        if (!$removed && ($st !== '' || $ct !== '')) {
+        if (!$removed && (trim(strip_tags($st)) !== '' || trim(strip_tags($ct)) !== '')) {
             $hasSection = true;
             break;
         }
@@ -175,12 +180,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             $pdo->beginTransaction();
 
-            $update = $pdo->prepare('UPDATE article SET titre = :titre, slug = :slug, resume = :resume, image_principale = :image, id_categorie = :categorie WHERE article_id = :id');
+            $update = $pdo->prepare('UPDATE article SET titre = :titre, slug = :slug, resume = :resume, image_principale = :image, alt_image = :alt, id_categorie = :categorie WHERE article_id = :id');
             $update->execute([
                 ':titre' => $titre,
                 ':slug' => $slug,
                 ':resume' => $resume,
                 ':image' => $image,
+                ':alt' => $imageAlt,
                 ':categorie' => $idCategorie,
                 ':id' => $articleId
             ]);
@@ -189,8 +195,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $countSections = max(count($detailIds), count($sousTitres), count($contenus), count($imageAlts), count($filesSection));
             for ($i = 0; $i < $countSections; $i++) {
                 $detailId = trim($detailIds[$i] ?? '');
-                $sousTitre = trim($sousTitres[$i] ?? '');
-                $contenu = trim($contenus[$i] ?? '');
+                $sousTitre = $sousTitres[$i] ?? '';
+                $contenu = $contenus[$i] ?? '';
                 $altRaw = $imageAlts[$i] ?? '';
                 $altList = array_map('trim', explode(';', $altRaw));
                 $existingImages = $detailId !== '' ? ($existingImagesByDetail[$detailId] ?? []) : [];
@@ -203,7 +209,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
 
                 if ($detailId === '') {
-                    if ($sousTitre === '' && $contenu === '') {
+                    if (trim(strip_tags($sousTitre)) === '' && trim(strip_tags($contenu)) === '') {
                         continue;
                     }
                     $detailId = generateDetailId();
@@ -212,13 +218,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         ':article' => $articleId,
                         ':titre' => $sousTitre,
                         ':contenu' => $contenu,
-                        ':slug' => slugify($sousTitre ?: ('section-' . ($i + 1)))
+                        ':slug' => slugify(trim(strip_tags($sousTitre)) ?: ('section-' . ($i + 1)))
                     ]);
                 } else {
                     $pdo->prepare('UPDATE article_details SET sous_titre = :titre, contenu = :contenu, slug_details = :slug WHERE details_id = :id')->execute([
                         ':titre' => $sousTitre,
                         ':contenu' => $contenu,
-                        ':slug' => slugify($sousTitre ?: ('section-' . ($i + 1))),
+                        ':slug' => slugify(trim(strip_tags($sousTitre)) ?: ('section-' . ($i + 1))),
                         ':id' => $detailId
                     ]);
                 }
@@ -312,7 +318,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         <form method="post" novalidate enctype="multipart/form-data">
                             <div class="mb-3">
                                 <label for="titre" class="form-label">Titre</label>
-                                <input type="text" class="form-control" id="titre" name="titre" value="<?php echo htmlspecialchars($titre, ENT_QUOTES, 'UTF-8'); ?>" required>
+                                <textarea class="form-control wysiwyg" id="titre" name="titre" rows="2" required><?php echo $titre; ?></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="slug" class="form-label">Slug</label>
@@ -321,11 +327,15 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                             </div>
                             <div class="mb-3">
                                 <label for="resume" class="form-label">Résumé</label>
-                                <textarea class="form-control" id="resume" name="resume" rows="3" required><?php echo htmlspecialchars($resume, ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                <textarea class="form-control wysiwyg" id="resume" name="resume" rows="4" required><?php echo $resume; ?></textarea>
                             </div>
                             <div class="mb-3">
                                 <label for="image_principale" class="form-label">Image principale (chemin)</label>
                                 <input type="text" class="form-control" id="image_principale" name="image_principale" value="<?php echo htmlspecialchars($image, ENT_QUOTES, 'UTF-8'); ?>">
+                            </div>
+                            <div class="mb-3">
+                                <label for="image_alt" class="form-label">Texte alternatif de l'image principale</label>
+                                <input type="text" class="form-control" id="image_alt" name="image_alt" value="<?php echo htmlspecialchars($imageAlt, ENT_QUOTES, 'UTF-8'); ?>" placeholder="Décrivez brièvement l'image">
                             </div>
                             <div class="mb-3">
                                 <label for="id_categorie" class="form-label">Catégorie</label>
@@ -352,11 +362,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Sous-titre</label>
-                                                <input type="text" class="form-control" name="sous_titre[]" value="<?php echo htmlspecialchars($section['sous_titre'], ENT_QUOTES, 'UTF-8'); ?>">
+                                                <textarea class="form-control wysiwyg" name="sous_titre[]" rows="2"><?php echo $section['sous_titre']; ?></textarea>
                                             </div>
                                             <div class="mb-3">
                                                 <label class="form-label">Contenu</label>
-                                                <textarea class="form-control" name="contenu[]" rows="3"><?php echo htmlspecialchars($section['contenu'], ENT_QUOTES, 'UTF-8'); ?></textarea>
+                                                <textarea class="form-control wysiwyg" name="contenu[]" rows="4"><?php echo $section['contenu']; ?></textarea>
                                             </div>
                                             <div class="row g-3">
                                                 <div class="col-md-6">
@@ -386,11 +396,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Sous-titre</label>
-                                            <input type="text" class="form-control" name="sous_titre[]">
+                                            <textarea class="form-control wysiwyg" name="sous_titre[]" rows="2"></textarea>
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Contenu</label>
-                                            <textarea class="form-control" name="contenu[]" rows="3"></textarea>
+                                            <textarea class="form-control wysiwyg" name="contenu[]" rows="4"></textarea>
                                         </div>
                                         <div class="row g-3">
                                             <div class="col-md-6">
@@ -416,8 +426,25 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             </section>
         </main>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js" referrerpolicy="origin"></script>
     <script src="../../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
     <script>
+        const tinyConfig = {
+            selector: '.wysiwyg',
+            menubar: false,
+            plugins: 'link image lists code',
+            toolbar: 'undo redo | blocks | bold italic underline | bullist numlist | link image | code',
+            block_formats: 'Paragraphe=p;Titre 1=h1;Titre 2=h2;Titre 3=h3;Titre 4=h4;Citation=blockquote',
+            height: 220,
+            branding: false,
+            convert_urls: false,
+            readonly: false,
+        };
+        if (window.tinymce) {
+            tinymce.remove();
+            tinymce.init(tinyConfig);
+        }
+
         function liveSlug(text) {
             return text
                 .normalize('NFD')
@@ -453,11 +480,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Sous-titre</label>
-                    <input type="text" class="form-control" name="sous_titre[]">
+                    <textarea class="form-control wysiwyg" name="sous_titre[]" rows="2"></textarea>
                 </div>
                 <div class="mb-3">
                     <label class="form-label">Contenu</label>
-                    <textarea class="form-control" name="contenu[]" rows="3"></textarea>
+                    <textarea class="form-control wysiwyg" name="contenu[]" rows="4"></textarea>
                 </div>
                 <div class="row g-3">
                     <div class="col-md-6">
@@ -471,6 +498,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 </div>
             `;
             wrapper.appendChild(block);
+            if (window.tinymce) {
+                tinymce.remove();
+                tinymce.init(tinyConfig);
+            }
         });
 
         wrapper.addEventListener('click', (e) => {
