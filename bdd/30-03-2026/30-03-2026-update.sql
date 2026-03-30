@@ -1,1 +1,3 @@
 ALTER TABLE menu ADD COLUMN menu_mere VARCHAR(255);
+
+ALTER TABLE article ADD COLUMN alt_img VARCHAR(255);
