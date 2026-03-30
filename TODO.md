@@ -71,18 +71,23 @@
   - Pagination si nécessaire
 - Page ajouter article (admin/article/saisie.php) :
   - Formulaire avec :
-    - Titre (générer slug automatiquement)
-    - Résumé (chapeau)
+    - Titre (TinyMCE WYSIWYG riche - stocké avec balises HTML)
+    - Résumé (TinyMCE WYSIWYG riche - stocké avec balises HTML)
     - Image principale (upload fichier)
     - Catégorie (select)
     - Meta title (champ pour SEO)
     - Meta description (champ pour SEO)
-    - Sections : Possibilité d'ajouter plusieurs sections (sous-titre, contenu, images associées)
+    - Sections : Possibilité d'ajouter plusieurs sections
+      - Sous-titre (TinyMCE WYSIWYG riche - stocké avec balises HTML)
+      - Contenu (TinyMCE WYSIWYG riche - stocké avec balises HTML)
+      - Images associées (upload multiple, alt list)
   - Upload d'images pour les sections
   - Sauvegarde en base avec insertion dans article et article_details
 - Page modifier article (admin/article/edit.php) :
   - Formulaire pré-rempli avec données existantes
+  - Titre et Résumé avec TinyMCE (contenu HTML parsé et éditable)
   - Possibilité d'ajouter/modifier/supprimer des sections
+  - Sous-titre et Contenu des sections avec TinyMCE (contenu HTML parsé et éditable)
   - Gestion des images (ajouter, remplacer, supprimer)
 - Page supprimer article (admin/article/delete.php) :
   - Confirmation et suppression en cascade (article_details, images)
@@ -90,40 +95,55 @@
 ### Gestion des Utilisateurs
 - (Optionnel) Page pour changer le mot de passe de l'admin
 
+### Éditeur WYSIWYG (TinyMCE)
+- Intégrer TinyMCE dans les formulaires pour les champs texte riche :
+  - **Articles** : Titre et Résumé avec éditeur riche (balises HTML)
+  - **Sections** : Sous-titre et Contenu avec éditeur riche (balises HTML)
+- Les données saisies (avec balises HTML : `<h1>`, `<b>`, `<i>`, etc.) sont stockées directement en base
+- À l'affichage, les balises sont conservées et rendues correctement (pas d'échappement)
+- Fichiers CDN : https://cdn.jsdelivr.net/npm/tinymce@6.8.3/tinymce.min.js (pas de clé API nécessaire)
+- Configuration TinyMCE :
+  - Plugins : `link`, `image`, `lists`, `code`
+  - Toolbar : `undo redo | blocks | bold italic underline | bullist numlist | link image | code`
+  - block_formats : `Paragraphe=p;Titre 1=h1;Titre 2=h2;Titre 3=h3;Titre 4=h4;Citation=blockquote` pour choisir les balises de titre
+  - Content-type : `application/json` pour les uploads images
+
 ### Preview
-- Une page qui affiche la page d'accueil publique (admin/preview.php)
+- Je devrais avoir un visuel reel de ce que le public peux voir
+  - Les layouts (header, footer, sidebar), ainsi que le corps du site
+  - header qui affichera les 3 tires de menu retractable et l'option accueil
+- Une page qui affiche la page d'accueil publique (admin/preview/preview.php)
+  - Afficher uniquement l'article avec son image
+- Une page qui affiche les details de l'article que le client clic (admin/preview/details.php)
+  - Afficher l'article et ses section (article_details) avec les images
 
 ## FRONTOFFICE (Partie Publique - Affichage pour les visiteurs)
 
 ### Structure Générale
 - Créer un header commun (includes/header.php) avec un menu de navigation discret (ex: "Le journal", "Services", recherche, catégories via un menu "hamburger").
 - Créer un footer commun (includes/footer.php) avec des informations (copyright, etc.).
+- Créer un sidebar pour selectionner les categories
 - Utiliser des templates PHP pour éviter la répétition.
 
 ### Page d'Accueil (Home - index.php)
-- C'est le preview du backoffice
-- Afficher directement le dernier article publié en pleine page (style "Le Monde").
-  - Requête SQL pour récupérer le dernier article (ORDER BY date_publication DESC LIMIT 1).
+- C'est le preview/preview du backoffice
+- Afficher tous les articles publiés en pleine page (style "Le Monde").
   - Afficher le contenu complet de l'article :
     - Titre (h1)
     - Image principale
     - Résumé (chapeau)
     - Date de publication
     - Catégorie
-    - Sections : Pour chaque article_details, afficher sous_titre (h2), contenu, images associées avec alt.
-- Pas de liste d'articles sous forme de cartes. L'accueil EST l'article le plus récent.
 
-### Page Catégorie (categorie.php?slug=slug_cat)
-- Afficher une liste simple des articles pour une catégorie donnée (titre et date).
-- Utiliser le slug pour récupérer la catégorie et ses articles.
-- Le clic sur un titre redirige vers la page de l'article.
-
-### Page Article Détail (article.php?slug=slug)
-- Cette page affichera un article spécifique qui n'est pas le dernier.
-- La structure est identique à celle de la page d'accueil :
-  - Récupérer l'article via son slug.
-  - Afficher le contenu complet : Titre (h1), image, résumé, sections (h2), etc.
-- Balises meta dynamiques : title et meta description depuis la base.
+### Page details (details.php)
+- C'est le preview/detail du backoffice
+- Afficher le contenu complet de l'article :
+  - Titre (h1)
+  - Image principale
+  - Résumé (chapeau)
+  - Date de publication
+  - Catégorie
+  - Sections : Pour chaque article_details, afficher sous_titre (h2), contenu, images associées avec alt.
 
 ### Gestion des Images
 - Dossier uploads/ pour stocker les images.
