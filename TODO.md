@@ -60,16 +60,16 @@
     - level 2 : option (liste/saisie)
 
 ### Gestion des Catégories
-- Page liste catégories (admin/categories.php) : Afficher toutes les catégories
-- Page ajouter catégorie (admin/add_categorie.php) : Formulaire pour créer une nouvelle catégorie (nom, génération automatique du slug)
-- Page modifier catégorie (admin/edit_categorie.php) : Formulaire pré-rempli pour éditer
-- Page supprimer catégorie (admin/delete_categorie.php) : Confirmation et suppression (attention aux articles liés)
+- Page liste catégories (admin/categorie/liste.php) : Afficher toutes les catégories
+- Page ajouter catégorie (admin/categorie/saisie.php) : Formulaire pour créer une nouvelle catégorie (nom, génération automatique du slug)
+- Page modifier catégorie (admin/categorie/edit.php) : Formulaire pré-rempli pour éditer
+- Page supprimer catégorie (admin/categorie/delete.php) : Confirmation et suppression (attention aux articles liés)
 
 ### CRUD Articles
-- Page liste articles (admin/articles.php) :
+- Page liste articles (admin/article/articles.php) :
   - Afficher tous les articles avec titre, catégorie, date, actions (éditer, supprimer)
   - Pagination si nécessaire
-- Page ajouter article (admin/add_article.php) :
+- Page ajouter article (admin/article/saisie.php) :
   - Formulaire avec :
     - Titre (générer slug automatiquement)
     - Résumé (chapeau)
@@ -80,15 +80,18 @@
     - Sections : Possibilité d'ajouter plusieurs sections (sous-titre, contenu, images associées)
   - Upload d'images pour les sections
   - Sauvegarde en base avec insertion dans article et article_details
-- Page modifier article (admin/edit_article.php) :
+- Page modifier article (admin/article/edit.php) :
   - Formulaire pré-rempli avec données existantes
   - Possibilité d'ajouter/modifier/supprimer des sections
   - Gestion des images (ajouter, remplacer, supprimer)
-- Page supprimer article (admin/delete_article.php) :
+- Page supprimer article (admin/article/delete.php) :
   - Confirmation et suppression en cascade (article_details, images)
 
 ### Gestion des Utilisateurs
 - (Optionnel) Page pour changer le mot de passe de l'admin
+
+### Preview
+- Une page qui affiche la page d'accueil publique
 
 ## FRONTOFFICE (Partie Publique - Affichage pour les visiteurs)
 
@@ -98,6 +101,7 @@
 - Utiliser des templates PHP pour éviter la répétition.
 
 ### Page d'Accueil (Home - index.php)
+- C'est le preview du backoffice
 - Afficher directement le dernier article publié en pleine page (style "Le Monde").
   - Requête SQL pour récupérer le dernier article (ORDER BY date_publication DESC LIMIT 1).
   - Afficher le contenu complet de l'article :

@@ -3,6 +3,11 @@
 $stmt = $pdo->query("SELECT * FROM menu ORDER BY menu_mere, level");
 $menus = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
+// Point d'ancrage pour générer des liens cohérents depuis les sous-dossiers (ex: ../)
+if (!isset($sidebarBaseUrl)) {
+    $sidebarBaseUrl = '';
+}
+
 // Fonction pour organiser les menus en hiérarchie basée sur menu_mere
 function buildMenu($menus) {
     $menuMap = [];
@@ -49,17 +54,17 @@ $menuTree = buildMenu($menus);
                         </a>
                         <ul id="submenu-<?php echo $menu['slug_menu']; ?>" class="submenu" style="display: none;">
                             <?php foreach ($menu['children'] as $child): ?>
-                                <li><a href="<?php echo $menu['slug_menu']; ?>/<?php echo $child['slug_menu']; ?>.php"><?php echo $child['nom']; ?></a></li>
+                                <li><a href="<?php echo $sidebarBaseUrl . $menu['slug_menu']; ?>/<?php echo $child['slug_menu']; ?>.php"><?php echo $child['nom']; ?></a></li>
                             <?php endforeach; ?>
                         </ul>
                     <?php else: ?>
-                        <a href="<?php echo $menu['slug_menu']; ?>.php"><?php echo $menu['nom']; ?></a>
+                        <a href="<?php echo $sidebarBaseUrl . $menu['slug_menu']; ?>.php"><?php echo $menu['nom']; ?></a>
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>
         </ul>
     </nav>
-    <a href="logout.php">Déconnexion</a>
+    <a href="<?php echo $sidebarBaseUrl; ?>logout.php">Déconnexion</a>
 </aside>
 
 <script>
