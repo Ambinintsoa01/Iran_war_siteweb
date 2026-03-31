@@ -52,7 +52,7 @@ function imageUrl(?string $path): ?string {
 }
 
 function fetchCategories(PDO $pdo): array {
-    $stmt = $pdo->query('SELECT nom, slug_cat FROM categorie ORDER BY nom ASC');
+    $stmt = $pdo->query('SELECT nom, slug_cat FROM Categorie ORDER BY nom ASC');
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
@@ -63,14 +63,14 @@ function fetchArticles(PDO $pdo, ?string $categorySlug = null): array {
         $where = 'WHERE c.slug_cat = ?';
         $params[] = $categorySlug;
     }
-    $sql = 'SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN categorie c ON c.categorie_id = a.id_categorie ' . $where . ' ORDER BY a.date_publication DESC, a.article_id DESC';
+    $sql = 'SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN Categorie c ON c.categorie_id = a.id_categorie ' . $where . ' ORDER BY a.date_publication DESC, a.article_id DESC';
     $stmt = $pdo->prepare($sql);
     $stmt->execute($params);
     return $stmt->fetchAll(PDO::FETCH_ASSOC);
 }
 
 function fetchArticleBySlug(PDO $pdo, string $slug): ?array {
-    $stmt = $pdo->prepare('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN categorie c ON c.categorie_id = a.id_categorie WHERE a.slug = ? LIMIT 1');
+    $stmt = $pdo->prepare('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN Categorie c ON c.categorie_id = a.id_categorie WHERE a.slug = ? LIMIT 1');
     $stmt->execute([$slug]);
     $row = $stmt->fetch(PDO::FETCH_ASSOC);
     return $row !== false ? $row : null;

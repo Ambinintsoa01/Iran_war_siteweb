@@ -1,9 +1,9 @@
 <?php
-// Configuration de la base de données
+// Configuration de la base de données pour Docker
 define('DB_HOST', 'db');
 define('DB_NAME', 'Iran_War');
-define('DB_USER', 'root'); // Utilisateur MySQL root dans le conteneur
-define('DB_PASS', 'iranwar'); // Mot de passe root défini par MYSQL_ROOT_PASSWORD
+define('DB_USER', 'root'); 
+define('DB_PASS', 'root'); 
 
 /**
  * Fonction pour obtenir une connexion PDO à la base de données
@@ -23,3 +23,4 @@ function getPDO() {
     return $pdo;
 }
 ?>
+
