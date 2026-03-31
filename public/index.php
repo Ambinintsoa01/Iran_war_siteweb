@@ -5,7 +5,8 @@ $pdo = getPDO();
 $categories = fetchCategories($pdo);
 $currentCategory = trim($_GET['categorie'] ?? '');
 $articles = fetchArticles($pdo, $currentCategory !== '' ? $currentCategory : null);
-$pageTitle = 'The News';
+$pageTitle = 'The News — Iran War';
+$pageDescription = 'Derniers articles et analyses sur la guerre Iran-Irak : contexte, chronologie, fronts et impact humain.';
 
 include __DIR__ . '/../includes/front_header.php';
 ?>

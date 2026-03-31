@@ -1,6 +1,8 @@
 <?php
 require_once __DIR__ . '/front_helpers.php';
-$title = $pageTitle ?? 'Le Journal';
+$title = $pageTitle ?? 'The News — Iran War';
+// Description par défaut, peut être surchargée par $pageDescription dans les pages
+$description = $pageDescription ?? 'Analyses, chronologie et récits autour de la guerre Iran-Irak.';
 ?>
 <!DOCTYPE html>
 <html lang="fr">
@@ -8,6 +10,7 @@ $title = $pageTitle ?? 'Le Journal';
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($title); ?></title>
+    <meta name="description" content="<?php echo h($description); ?>">
     
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
