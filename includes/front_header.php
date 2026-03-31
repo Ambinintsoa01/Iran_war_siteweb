@@ -23,7 +23,7 @@ $title = $pageTitle ?? 'Le Journal';
 
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #fff; 
+            background-color: #F9F7F2; 
             color: var(--paper-dark);
         }
 
