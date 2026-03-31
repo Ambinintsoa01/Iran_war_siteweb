@@ -5,7 +5,7 @@ $pdo = getPDO();
 $categories = fetchCategories($pdo);
 $currentCategory = trim($_GET['categorie'] ?? '');
 $articles = fetchArticles($pdo, $currentCategory !== '' ? $currentCategory : null);
-$pageTitle = 'Accueil — Le Journal';
+$pageTitle = 'The News';
 
 include __DIR__ . '/../includes/front_header.php';
 ?>
