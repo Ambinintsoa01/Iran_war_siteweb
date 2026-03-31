@@ -85,6 +85,13 @@ $title = $pageTitle ?? 'Le Journal';
             color: var(--paper-blue);
         }
 
+        div.col:hover  {
+            transform: scale(1.02);
+            background-color: rgba(134, 132, 132, 0.2);
+            transition: all 0.5s ease;
+            
+        }
+
         /* 3. Utilitaires pour le contenu */
         h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 900; }
         a { text-decoration: none; }
