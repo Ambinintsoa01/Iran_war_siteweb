@@ -75,7 +75,7 @@ include __DIR__ . '/../includes/front_header.php';
                                 <?php foreach ($section['images'] as $image): ?>
                                     <div class="<?php echo $colClass; ?>">
                                         <div class="img-wrapper">
-                                            <img src="<?php echo h(imageUrl($image['path'])); ?>" class="img-fluid w-100" alt="<?php echo h($image['alt_image'] ?? ''); ?>">
+                                            <img src="<?php echo h(imageUrl($image['path'])); ?>" class="img-fluid w-100" loading="lazy" decoding="async" alt="<?php echo h($image['alt_image'] ?? ''); ?>">
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -100,7 +100,7 @@ include __DIR__ . '/../includes/front_header.php';
                                     <div class="img-wrapper" style="aspect-ratio: 1/1;">
                                         <img src="<?php echo h(imageUrl($sideItem['image_principale'])); ?>" 
                                             class="img-fluid h-100 w-100" 
-                                            style="object-fit: cover;" alt="<?php echo h($sideItem['alt_img'] ?? ''); ?>">
+                                            style="object-fit: cover;" loading="lazy" decoding="async" alt="<?php echo h($sideItem['alt_img'] ?? ''); ?>">
                                     </div>
                                 </div>
                                 <div class="col-8 ps-3">

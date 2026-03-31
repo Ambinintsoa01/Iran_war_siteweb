@@ -126,6 +126,12 @@ $description = $pageDescription ?? 'Analyses, chronologie et récits autour de l
         .sidebar-item:hover .sidebar-title {
             color: var(--paper-blue) !important;
         }
+
+        /* Focus visible pour l'accessibilité clavier (ne change pas la mise en page) */
+        a:focus-visible {
+            outline: 2px solid var(--paper-blue);
+            outline-offset: 2px;
+        }
     </style>
 </head>
 <body>

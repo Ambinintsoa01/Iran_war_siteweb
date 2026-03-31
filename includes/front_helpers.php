@@ -53,7 +53,9 @@ function imageUrl(?string $path): ?string {
     $clean = ltrim(preg_replace('#^\.\./#', '', $clean) ?? '', '/\\');
     $clean = str_replace('\\', '/', $clean);
     if (preg_match('#^https?://#i', $clean)) {
-        return $clean;
+        // Proxy les images distantes (ex: Pexels) via notre domaine pour éviter les cookies tiers
+        $encoded = rawurlencode($clean);
+        return '/image-proxy.php?src=' . $encoded;
     }
     return baseUrl($clean);
 }
