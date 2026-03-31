@@ -1,0 +1,27 @@
+RewriteEngine On
+RewriteBase /
+
+# Exclure admin et login.php de la réécriture
+RewriteCond %{REQUEST_URI} ^/admin [OR]
+RewriteCond %{REQUEST_URI} ^/login.php [OR]
+RewriteCond %{REQUEST_URI} ^/assets [OR]
+RewriteCond %{REQUEST_URI} ^/css [OR]
+RewriteCond %{REQUEST_URI} ^/upload
+RewriteRule ^ - [L]
+
+# Ne pas réécrire si le fichier ou dossier existe
+RewriteCond %{REQUEST_FILENAME} -f [OR]
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
+# Page d'accueil "iran-war-news" -> front public/index.php
+RewriteRule ^iran-war-news/?$ public/index.php [L,QSA]
+
+# URL des articles : /iran-war-news/article/slug
+RewriteRule ^iran-war-news/article/([^/]+)/?$ public/details.php?slug=$1 [L,QSA]
+
+# URL des catégories : /iran-war-news/categorie/slug_cat
+RewriteRule ^iran-war-news/categorie/([^/]+)/?$ public/index.php?categorie=$1 [L,QSA]
+
+# (optionnel) redirection racine -> /iran-war-news/
+RewriteRule ^$ iran-war-news/ [L,R=302]

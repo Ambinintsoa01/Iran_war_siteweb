@@ -1,0 +1,250 @@
+<?php
+session_start();
+
+if (!isset($_SESSION['user_id'])) {
+    header('Location: ../login.php');
+    exit();
+}
+
+require_once '../../includes/config.php';
+
+$pdo = getPDO();
+$sidebarBaseUrl = '../';
+
+$categoriesStmt = $pdo->query('SELECT nom, slug_cat FROM Categorie ORDER BY nom ASC LIMIT 6');
+$categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
+
+$slugParam = trim($_GET['slug'] ?? '');
+$idParam = trim($_GET['id'] ?? '');
+
+function fetchArticle(PDO $pdo, string $slugParam, string $idParam): ?array {
+    if ($idParam !== '' && ctype_digit($idParam)) {
+        $stmt = $pdo->prepare('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN Categorie c ON c.categorie_id = a.id_categorie WHERE a.article_id = ? LIMIT 1');
+        $stmt->execute([$idParam]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) { return $row; }
+    }
+    if ($slugParam !== '') {
+        $stmt = $pdo->prepare('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN Categorie c ON c.categorie_id = a.id_categorie WHERE a.slug = ? LIMIT 1');
+        $stmt->execute([$slugParam]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        if ($row) { return $row; }
+    }
+    return null;
+}
+
+$article = fetchArticle($pdo, $slugParam, $idParam);
+
+$sections = [];
+if ($article) {
+    $detailsStmt = $pdo->prepare('SELECT details_id, sous_titre, contenu FROM article_details WHERE article_id = ? ORDER BY details_id');
+    $detailsStmt->execute([$article['article_id']]);
+    $details = $detailsStmt->fetchAll(PDO::FETCH_ASSOC);
+
+    $detailIds = array_column($details, 'details_id');
+    $imagesByDetail = [];
+    if (!empty($detailIds)) {
+        $placeholders = implode(',', array_fill(0, count($detailIds), '?'));
+        $imgStmt = $pdo->prepare("SELECT image_id, details_id, path, alt_image FROM image WHERE details_id IN ($placeholders) ORDER BY image_id");
+        $imgStmt->execute($detailIds);
+        while ($img = $imgStmt->fetch(PDO::FETCH_ASSOC)) {
+            $imagesByDetail[$img['details_id']][] = $img;
+        }
+    }
+    foreach ($details as $detail) {
+        $detail['images'] = $imagesByDetail[$detail['details_id']] ?? [];
+        $sections[] = $detail;
+    }
+}
+
+function h($value) {
+    return htmlspecialchars($value ?? '', ENT_QUOTES, 'UTF-8');
+}
+
+function renderHtml(?string $value): string {
+    return $value ?? '';
+}
+
+function formatDate($dateString) {
+    if (!$dateString) {
+        return '';
+    }
+    try {
+        $dt = new DateTime($dateString);
+        return $dt->format('d M Y');
+    } catch (Exception $e) {
+        return $dateString;
+    }
+}
+
+function imageUrl(?string $path): ?string {
+    if (!$path) {
+        return null;
+    }
+    // Sanitize leading slashes and any ../ introduced by storage, then prefix to root
+    $clean = preg_replace('#^\.\./#', '', $path);
+    $clean = ltrim($clean, '/\\');
+    $clean = str_replace('\\', '/', $clean);
+    return '../../' . $clean;
+}
+?>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prévisualisation - Détails</title>
+    <link rel="stylesheet" href="../../assets/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../../css/admin.css">
+    <style>
+        body { background: #ffffff; color: #1a202c; font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif; }
+        .news-shell { max-width: 1100px; margin: 0 auto; padding: 1.5rem; }
+        .top-nav { display: flex; justify-content: space-between; align-items: center; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 0.75rem 1.1rem; box-shadow: 0 6px 18px rgba(15,23,42,0.08); margin-bottom: 1rem; }
+        .top-nav-left { display: flex; align-items: center; gap: 0.9rem; }
+        .top-nav .brand { font-weight: 700; color: #0f172a; letter-spacing: 0.04em; }
+        .top-nav .menu { display: flex; gap: 1rem; }
+        .top-nav .menu a { color: #475569; text-decoration: none; font-weight: 600; }
+        .top-nav .menu a:hover { color: #0f172a; }
+        .menu-icon { border: 1px solid #e5e7eb; background: #ffffff; width: 42px; height: 42px; border-radius: 10px; display: flex; flex-direction: column; justify-content: center; gap: 6px; padding: 0 10px; box-shadow: 0 4px 12px rgba(15,23,42,0.08); cursor: pointer; }
+        .menu-icon:hover { background: #f8fafc; }
+        .menu-icon span { display: block; height: 2px; background: #0f172a; border-radius: 4px; transition: transform 0.2s ease, opacity 0.2s ease; }
+        .menu-icon.active span:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+        .menu-icon.active span:nth-child(2) { opacity: 0; }
+        .menu-icon.active span:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+        .preview-layout { position: relative; min-height: 100%; }
+        .preview-sidebar { position: absolute; top: 0; left: 0; bottom: 0; width: 240px; max-width: 80%; background: #ffffff; border: 1px solid #e5e7eb; border-radius: 10px; padding: 1rem; box-shadow: 0 10px 24px rgba(15,23,42,0.06); transition: transform 0.2s ease, opacity 0.2s ease; z-index: 2; overflow: auto; }
+        .preview-content { position: relative; z-index: 1; }
+        .preview-layout.sidebar-hidden .preview-sidebar { transform: translateX(-110%); opacity: 0; pointer-events: none; }
+        .preview-sidebar h3 { font-size: 1.05rem; margin-bottom: 0.75rem; color: #0f172a; }
+        .preview-sidebar ul { list-style: none; padding: 0; margin: 0; }
+        .preview-sidebar li { margin-bottom: 0.35rem; }
+        .preview-sidebar a { color: #475569; text-decoration: none; font-weight: 600; }
+        .preview-sidebar a:hover { color: #0f172a; }
+        .hero { position: relative; border-radius: 14px; overflow: hidden; background: linear-gradient(135deg, #eef2ff, #e0f2fe); min-height: 320px; display: grid; grid-template-columns: 1.3fr 1fr; gap: 0; box-shadow: 0 20px 60px rgba(15,23,42,0.12); }
+        .hero img { width: 100%; height: 100%; object-fit: cover; }
+        .hero .overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.35) 45%, rgba(255,255,255,0) 75%); }
+        .hero-copy { position: relative; padding: 2rem; z-index: 2; font-family: "Merriweather", "Times New Roman", serif; }
+        .kicker { display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.3rem 0.8rem; background: #fef2f2; border: 1px solid #fecdd3; border-radius: 999px; color: #991b1b; font-weight: 600; font-size: 0.9rem; text-transform: uppercase; }
+        .article-title { font-size: 2rem; margin: 1rem 0 0.5rem; line-height: 1.2; color: #0f172a; font-family: "Merriweather", "Times New Roman", serif; }
+        .lead { font-size: 1.05rem; color: #334155; max-width: 52ch; font-family: "Merriweather", "Times New Roman", serif; }
+        .content-grid { margin-top: 2rem; display: grid; gap: 1.2rem; }
+        .section-card { background: #ffffff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 1.25rem; box-shadow: 0 10px 30px rgba(15,23,42,0.08); }
+        .section-card h2 { font-size: 1.3rem; margin-bottom: 0.75rem; color: #0f172a; font-family: "Merriweather", "Times New Roman", serif; }
+        .section-body { color: #334155; line-height: 1.6; font-family: "Merriweather", "Times New Roman", serif; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 0.9rem; margin-top: 0.75rem; }
+        .gallery figure { background: #f8fafc; border: 1px solid #e5e7eb; border-radius: 10px; overflow: hidden; margin: 0; }
+        .gallery img { width: 100%; height: 180px; object-fit: cover; }
+        .gallery figcaption { padding: 0.5rem 0.75rem 0.8rem; color: #475569; font-size: 0.9rem; }
+        .empty-state { padding: 2rem; background: #ffffff; border-radius: 12px; border: 1px dashed #cbd5e1; color: #334155; text-align: center; }
+        @media (max-width: 900px) { .hero { grid-template-columns: 1fr; min-height: 0; } .hero img { height: 260px; } .hero .overlay { background: linear-gradient(180deg, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 65%); } .hero-copy { padding: 1.5rem; } .article-title { font-size: 1.6rem; } }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <?php include '../../includes/sidebar.php'; ?>
+        <main class="main-content" style="background: #ffffff;">
+            <header class="d-flex justify-content-between align-items-center">
+                <div>
+                    <p class="mb-1 text-muted">Prévisualisation</p>
+                    <h1 class="mb-0">Détails article (aperçu)</h1>
+                </div>
+                <div class="d-flex gap-2">
+                    <a class="btn btn-outline-secondary" href="preview.php">Retour preview</a>
+                    <?php if ($article): ?>
+                        <a class="btn btn-primary" href="../../article.php?slug=<?php echo h($article['slug']); ?>" target="_blank">Voir sur le site</a>
+                    <?php endif; ?>
+                </div>
+            </header>
+
+            <div class="news-shell">
+                <div class="top-nav">
+                    <div class="top-nav-left">
+                        <button type="button" class="menu-icon" id="toggle-sidebar" aria-label="Basculer le menu">
+                            <span></span>
+                            <span></span>
+                            <span></span>
+                        </button>
+                        <div class="brand">Le Journal</div>
+                    </div>
+                    <div class="menu">
+                        <a href="../preview.php">Accueil</a>
+                        <a href="#">Le journal</a>
+                        <a href="#">Services</a>
+                    </div>
+                </div>
+
+                <div class="preview-layout">
+                    <aside class="preview-sidebar">
+                        <h3>Catégories</h3>
+                        <ul>
+                            <?php foreach ($categories as $cat): ?>
+                                <li><a href="#"><?php echo h($cat['nom']); ?></a></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </aside>
+                    <div class="preview-content">
+                        <?php if (!$article): ?>
+                            <div class="empty-state">
+                                <h4 class="mb-2">Article introuvable</h4>
+                                <p class="mb-0">Vérifiez le slug ou l'identifiant.</p>
+                            </div>
+                        <?php else: ?>
+                            <div class="hero mb-4">
+                                <?php if ($article['image_principale']): ?>
+                                    <img src="<?php echo h(imageUrl($article['image_principale'])); ?>" alt="<?php echo h($article['alt_img']); ?>">
+                                <?php else: ?>
+                                    <div style="background: radial-gradient(circle at 20% 20%, #e2e8f0, #f8fafc); height: 100%; width: 100%;"></div>
+                                <?php endif; ?>
+                                <div class="overlay"></div>
+                                <div class="hero-copy">
+                                    <div class="kicker">
+                                        <span><?php echo h($article['categorie_nom'] ?: 'Une'); ?></span>
+                                        <small><?php echo formatDate($article['date_publication'] ?? ''); ?></small>
+                                    </div>
+                                    <h1 class="article-title"><?php echo renderHtml($article['titre']); ?></h1>
+                                    <div class="lead"><?php echo renderHtml($article['resume']); ?></div>
+                                </div>
+                            </div>
+
+                            <div class="content-grid mb-4">
+                                <?php foreach ($sections as $section): ?>
+                                    <article class="section-card">
+                                        <h2><?php echo renderHtml($section['sous_titre']); ?></h2>
+                                        <div class="section-body"><?php echo renderHtml($section['contenu']); ?></div>
+                                        <?php if (!empty($section['images'])): ?>
+                                            <div class="gallery">
+                                                <?php foreach ($section['images'] as $img): ?>
+                                                    <figure>
+                                                        <img src="<?php echo h(imageUrl($img['path'])); ?>" alt="<?php echo h($img['alt_image']); ?>">
+                                                        <figcaption><?php echo h($img['alt_image']); ?></figcaption>
+                                                    </figure>
+                                                <?php endforeach; ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </article>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    <script src="../../assets/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const toggleBtn = document.getElementById('toggle-sidebar');
+            const layout = document.querySelector('.preview-layout');
+
+            if (toggleBtn && layout) {
+                toggleBtn.addEventListener('click', function () {
+                    layout.classList.toggle('sidebar-hidden');
+                    toggleBtn.classList.toggle('active');
+                    const hidden = layout.classList.contains('sidebar-hidden');
+                    toggleBtn.setAttribute('aria-label', hidden ? 'Ouvrir le menu' : 'Masquer le menu');
+                });
+            }
+        });
+    </script>
+</body>
+</html>

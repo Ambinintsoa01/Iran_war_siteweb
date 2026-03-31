@@ -1,0 +1,221 @@
+/* Admin CSS - Inspired by BBC World and France 24 */
+/* Dark theme with clean, professional design */
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #0A0A0A;
+    color: #FFFFFF;
+    margin: 0;
+    padding: 0;
+}
+
+.admin-container {
+    display: flex;
+    min-height: 100vh;
+}
+
+/* Sidebar Styles */
+.sidebar {
+    width: 250px;
+    background-color: #1A1A1A;
+    padding: 20px;
+    box-shadow: 2px 0 5px rgba(0,0,0,0.5);
+    position: fixed;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.sidebar h2 {
+    color: #FFFFFF;
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    text-align: center;
+    border-bottom: 1px solid #333;
+    padding-bottom: 10px;
+}
+
+.sidebar nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar nav ul li {
+    margin-bottom: 10px;
+}
+
+.sidebar nav ul li a {
+    color: #CCCCCC;
+    text-decoration: none;
+    display: block;
+    padding: 10px 15px;
+    border-radius: 5px;
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.sidebar nav ul li a:hover {
+    background-color: #333;
+    color: #FFFFFF;
+}
+
+.sidebar nav ul li ul {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.sidebar nav ul li ul li a {
+    padding: 5px 10px;
+    font-size: 0.9rem;
+}
+
+/* Submenu Styles */
+.submenu {
+    margin-left: 20px;
+    margin-top: 5px;
+}
+
+.toggle-icon {
+    margin-right: 5px;
+    font-weight: bold;
+    color: #FFFFFF;
+}
+
+/* Main Content Styles */
+.main-content {
+    flex: 1;
+    margin-left: 250px;
+    background-color: #F8F9FA;
+    color: #212529;
+    padding: 20px;
+    min-height: 100vh;
+}
+
+.main-content header {
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+}
+
+.main-content header h1 {
+    margin: 0;
+    color: #212529;
+    font-size: 2rem;
+}
+
+/* Stats Section */
+.stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+}
+
+.stat-card {
+    background-color: #FFFFFF;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    flex: 1;
+    text-align: center;
+}
+
+.stat-card h3 {
+    margin: 0 0 10px 0;
+    color: #495057;
+}
+
+.stat-card p {
+    font-size: 2rem;
+    font-weight: bold;
+    color: #007BFF;
+    margin: 0;
+}
+
+/* General Styles */
+.btn {
+    border-radius: 5px;
+}
+
+.table {
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.table th {
+    background-color: #F8F9FA;
+    color: #212529;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .admin-container {
+        flex-direction: column;
+    }
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: static;
+    }
+    .main-content {
+        margin-left: 0;
+    }
+}
+
+/* Login Page Styles */
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #ffffff;
+}
+
+.login-card {
+    background-color: #1A1A1A;
+    padding: 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+    width: 100%;
+    max-width: 400px;
+    color: #FFFFFF;
+}
+
+.login-card h1 {
+    text-align: center;
+    margin-bottom: 30px;
+    color: #FFFFFF;
+    font-size: 2rem;
+}
+
+.login-card .form-label {
+    color: #CCCCCC;
+}
+
+.login-card .form-control {
+    background-color: #333;
+    border: 1px solid #555;
+    color: #FFFFFF;
+}
+
+.login-card .form-control:focus {
+    background-color: #333;
+    border-color: #007BFF;
+    color: #FFFFFF;
+    box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+}
+
+.login-card .btn-primary {
+    background-color: #007BFF;
+    border-color: #007BFF;
+}
+
+.login-card .btn-primary:hover {
+    background-color: #0056b3;
+    border-color: #0056b3;
+}
+
+.login-card .alert {
+    margin-bottom: 20px;
+}
