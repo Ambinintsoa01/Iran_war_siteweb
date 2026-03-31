@@ -28,6 +28,26 @@ if ($parts['scheme'] !== 'https' || (strpos($host, 'pexels.com') === false && st
     exit('Forbidden host');
 }
 
+// Pour les URLs Pexels, demander une version compressée/redimensionnée pour réduire drastiquement le poids.
+// Exemple : ?auto=compress&cs=tinysrgb&w=1200
+$query = [];
+if (!empty($parts['query'])) {
+    parse_str($parts['query'], $query);
+}
+$query['auto'] = 'compress';
+$query['cs'] = 'tinysrgb';
+$query['w'] = '900';
+
+$rebuilt = $parts['scheme'] . '://' . $parts['host'];
+if (!empty($parts['path'])) {
+    $rebuilt .= $parts['path'];
+}
+if (!empty($query)) {
+    $rebuilt .= '?' . http_build_query($query);
+}
+
+$src = $rebuilt;
+
 // Déterminer un type MIME simple à partir de l'extension
 $path = $parts['path'] ?? '';
 $ext = strtolower(pathinfo($path, PATHINFO_EXTENSION));
@@ -40,7 +60,7 @@ if ($ext === 'png') {
     $mime = 'image/webp';
 }
 
-// Récupérer l'image distante
+// Récupérer l'image distante (compressée)
 $context = stream_context_create([
     'http' => [
         'timeout' => 5,
@@ -60,5 +80,6 @@ if ($data === false) {
 }
 
 header('Content-Type: ' . $mime);
-header('Cache-Control: public, max-age=86400');
+// Mettre en cache longtemps côté navigateur pour de meilleures performances sur les visites suivantes
+header('Cache-Control: public, max-age=31536000, immutable');
 echo $data;

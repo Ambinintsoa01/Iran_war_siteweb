@@ -37,7 +37,7 @@ include __DIR__ . '/../includes/front_header.php';
                 <h1 class="display-4 fw-bold mb-4" style="font-family: 'Playfair Display', serif;">
                     <?php echo renderHtml($article['titre']); ?>
                 </h1>
-                <p class="lead text-secondary mb-4 fs-4 fst-italic">
+                <p class="lead mb-4 fs-4 fst-italic">
                     <?php echo renderHtml($article['resume']); ?>
                 </p>
                 <div class="border-top border-bottom py-3 d-flex justify-content-between align-items-center small text-muted text-uppercase fw-bold">
@@ -49,7 +49,9 @@ include __DIR__ . '/../includes/front_header.php';
             <?php if ($article['image_principale']): ?>
                 <div class="img-wrapper mb-5">
                     <img src="<?php echo h(imageUrl($article['image_principale'])); ?>" 
-                         class="img-fluid w-100 shadow-sm" alt="<?php echo h($article['alt_img']); ?>">
+                         class="img-fluid w-100 shadow-sm" 
+                         alt="<?php echo h($article['alt_img']); ?>"
+                         width="900" height="600">
                 </div>
             <?php endif; ?>
 
@@ -75,7 +77,7 @@ include __DIR__ . '/../includes/front_header.php';
                                 <?php foreach ($section['images'] as $image): ?>
                                     <div class="<?php echo $colClass; ?>">
                                         <div class="img-wrapper">
-                                            <img src="<?php echo h(imageUrl($image['path'])); ?>" class="img-fluid w-100" loading="lazy" decoding="async" alt="<?php echo h($image['alt_image'] ?? ''); ?>">
+                                            <img src="<?php echo h(imageUrl($image['path'])); ?>" class="img-fluid w-100" loading="lazy" decoding="async" alt="<?php echo h($image['alt_image'] ?? ''); ?>" width="800" height="600">
                                         </div>
                                     </div>
                                 <?php endforeach; ?>
@@ -100,13 +102,13 @@ include __DIR__ . '/../includes/front_header.php';
                                     <div class="img-wrapper" style="aspect-ratio: 1/1;">
                                         <img src="<?php echo h(imageUrl($sideItem['image_principale'])); ?>" 
                                             class="img-fluid h-100 w-100" 
-                                            style="object-fit: cover;" loading="lazy" decoding="async" alt="<?php echo h($sideItem['alt_img'] ?? ''); ?>">
+                                            style="object-fit: cover;" loading="lazy" decoding="async" alt="<?php echo h($sideItem['alt_img'] ?? ''); ?>" width="424" height="282">
                                     </div>
                                 </div>
                                 <div class="col-8 ps-3">
-                                    <h6 class="sidebar-title fw-bold mb-1" style="font-family: 'Playfair Display', serif; font-size: 0.9rem; line-height: 1.3; transition: 0.3s;">
+                                    <h5 class="sidebar-title fw-bold mb-1" style="font-family: 'Playfair Display', serif; font-size: 0.9rem; line-height: 1.3; transition: 0.3s;">
                                         <?php echo renderHtml($sideItem['titre']); ?>
-                                    </h6>
+                                    </h5>
                                     <div class="text-muted" style="font-size: 0.7rem; text-transform: uppercase; font-weight: 700;">
                                         <?php echo formatDate($sideItem['date_publication']); ?>
                                     </div>
