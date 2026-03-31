@@ -117,8 +117,6 @@ $title = $pageTitle ?? 'Le Journal';
             <div class="container">
                 <ul class="nav-modern">
                     <li><a href="<?php echo frontUrl(''); ?>" class="nav-link">Accueil</a></li>
-                    <li><a href="#" class="nav-link">Le Journal</a></li>
-                    <li><a href="#" class="nav-link">Services</a></li>
                     <li><a href="<?php echo baseUrl('login.php'); ?>" class="nav-link login-link">Admin</a></li>
                 </ul>
             </div>
