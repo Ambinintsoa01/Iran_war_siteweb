@@ -17,7 +17,7 @@ include __DIR__ . '/../includes/front_header.php';
                     <ul>
                         <li><a class="<?php echo $currentCategory === '' ? 'active' : ''; ?>" href="<?php echo frontUrl(''); ?>">Toutes</a></li>
                         <?php foreach ($categories as $cat): ?>
-                            <li><a class="<?php echo $currentCategory === $cat['slug_cat'] ? 'active' : ''; ?>" href="<?php echo frontUrl('index.php?categorie=' . h($cat['slug_cat'])); ?>"><?php echo h($cat['nom']); ?></a></li>
+                            <li><a class="<?php echo $currentCategory === $cat['slug_cat'] ? 'active' : ''; ?>" href="<?php echo frontUrl('categorie/' . h($cat['slug_cat'])); ?>"><?php echo h($cat['nom']); ?></a></li>
                         <?php endforeach; ?>
                     </ul>
                 </nav>
@@ -43,7 +43,7 @@ include __DIR__ . '/../includes/front_header.php';
                                 <h1 class="article-title"><?php echo renderHtml($article['titre'] ?? ''); ?></h1>
                                 <div class="lead"><?php echo renderHtml($article['resume'] ?? ''); ?></div>
                                 <div class="mt-3">
-                                    <a class="btn btn-outline-primary" href="<?php echo frontUrl('details.php?slug=' . ($article['slug'] ?? '')); ?>">Lire</a>
+                                    <a class="btn btn-outline-primary" href="<?php echo frontUrl('article/' . ($article['slug'] ?? '')); ?>">Lire</a>
                                 </div>
                             </div>
                         </article>

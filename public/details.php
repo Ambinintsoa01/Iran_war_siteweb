@@ -23,7 +23,7 @@ include __DIR__ . '/../includes/front_header.php';
                     <ul>
                         <li><a class="<?php echo $currentCategory === '' ? 'active' : ''; ?>" href="<?php echo frontUrl(''); ?>">Toutes</a></li>
                         <?php foreach ($categories as $cat): ?>
-                            <li><a class="<?php echo $currentCategory === $cat['slug_cat'] ? 'active' : ''; ?>" href="<?php echo frontUrl('index.php?categorie=' . h($cat['slug_cat'])); ?>"><?php echo h($cat['nom']); ?></a></li>
+                            <li><a class="<?php echo $currentCategory === $cat['slug_cat'] ? 'active' : ''; ?>" href="<?php echo frontUrl('categorie/' . h($cat['slug_cat'])); ?>"><?php echo h($cat['nom']); ?></a></li>
                         <?php endforeach; ?>
                     </ul>
                 </nav>
