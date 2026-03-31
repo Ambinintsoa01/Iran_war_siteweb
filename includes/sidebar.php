@@ -53,8 +53,8 @@ function adminMenuDir(string $slug): string {
 ?>
 
 <aside class="sidebar">
-    <h2>Backoffice</h2>
-    <nav>
+    <p class="sidebar-title">Backoffice</p>
+    <nav aria-label="Navigation du backoffice">
         <ul>
             <?php foreach ($menuTree as $menu): ?>
                 <?php $dir = adminMenuDir($menu['slug_menu']); ?>
@@ -85,7 +85,7 @@ function adminMenuDir(string $slug): string {
             <?php endforeach; ?>
         </ul>
     </nav>
-    <a href="<?php echo $sidebarBaseUrl; ?>logout.php">Déconnexion</a>
+    <a class="logout-link" href="<?php echo $sidebarBaseUrl; ?>logout.php">Déconnexion</a>
 </aside>
 
 <script>

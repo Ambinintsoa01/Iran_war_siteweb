@@ -25,7 +25,7 @@ body {
     overflow-y: auto;
 }
 
-.sidebar h2 {
+.sidebar .sidebar-title {
     color: #FFFFFF;
     font-size: 1.5rem;
     margin-bottom: 20px;
@@ -45,7 +45,7 @@ body {
 }
 
 .sidebar nav ul li a {
-    color: #CCCCCC;
+    color: #E0E0E0;
     text-decoration: none;
     display: block;
     padding: 10px 15px;
@@ -66,6 +66,28 @@ body {
 .sidebar nav ul li ul li a {
     padding: 5px 10px;
     font-size: 0.9rem;
+}
+
+/* Lien de déconnexion, stylé comme un élément de menu avec fort contraste */
+.sidebar .logout-link {
+    display: block;
+    margin-top: 20px;
+    padding: 10px 15px;
+    border-radius: 5px;
+    color: #FFFFFF;
+    text-decoration: none;
+    background-color: #333333;
+}
+
+.sidebar .logout-link:hover {
+    background-color: #444444;
+}
+
+/* Focus visible sur les liens de navigation de la sidebar */
+.sidebar nav ul li a:focus-visible,
+.sidebar .logout-link:focus-visible {
+    outline: 2px solid #FFD54F;
+    outline-offset: 2px;
 }
 
 /* Submenu Styles */

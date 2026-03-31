@@ -11,13 +11,24 @@ $description = $pageDescription ?? 'Analyses, chronologie et récits autour de l
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title><?php echo h($title); ?></title>
     <meta name="description" content="<?php echo h($description); ?>">
-    
+
+    <!-- Optimisations de performance : pré-connexion aux CDN utilisés -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+
+    <!-- Chargement non bloquant des polices Google (Playfair + Inter) -->
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;700&display=swap">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;700&display=swap" media="print" onload="this.media='all'">
+    <noscript>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;700&display=swap">
+    </noscript>
+
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     
     <style>
-        /* 1. Import des polices (Playfair pour le côté Journal) */
-        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=Inter:wght@400;600;700&display=swap');
-
+        /* 1. Import des polices (Playfair pour le côté Journal)
+           (les fichiers CSS sont chargés de façon asynchrone via les balises <link> ci-dessus) */
         :root {
             --paper-dark: #1a1a1a;
             --paper-blue: #2b41e2;

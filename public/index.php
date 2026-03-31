@@ -55,7 +55,7 @@ include __DIR__ . '/../includes/front_header.php';
                             <img src="<?php echo h(imageUrl($featured['image_principale'])); ?>" 
                                  class="img-fluid shadow-sm w-100" 
                                  style="height: 550px; object-fit: cover;" 
-                                 alt="<?php echo h($featured['titre']); ?>" loading="lazy">
+                                 alt="<?php echo h($featured['titre']); ?>" fetchpriority="high">
                         </a>
                     </div>
                 </section>
