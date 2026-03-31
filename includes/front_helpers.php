@@ -2,9 +2,8 @@
 
 require_once __DIR__ . '/config.php';
 
-// Dans le conteneur Docker, le site est servi à la racine (http://localhost/)
-// donc on laisse BASE_PATH vide pour que les URLs commencent par "/".
-define('BASE_PATH', '');
+// Le front est servi sous le chemin virtuel "/iran-war-news" (URL publique)
+define('BASE_PATH', 'iran-war-news');
 
 function baseUrl(string $path = ''): string {
     $base = trim(BASE_PATH, '/');
@@ -22,7 +21,7 @@ function baseUrl(string $path = ''): string {
 }
 
 function frontUrl(string $path = ''): string {
-    return baseUrl('public/' . ltrim($path, '/'));
+    return baseUrl($path);
 }
 
 function h($value): string {

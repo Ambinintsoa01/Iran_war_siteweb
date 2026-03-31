@@ -1,13 +1,1 @@
-RewriteEngine On
-RewriteBase /public/
-
-# Ne pas réécrire si le fichier ou dossier existe
-RewriteCond %{REQUEST_FILENAME} -f [OR]
-RewriteCond %{REQUEST_FILENAME} -d
-RewriteRule ^ - [L]
-
-# URL des articles : /public/article/slug
-RewriteRule ^article/([^/]+)/?$ details.php?slug=$1 [L,QSA]
-
-# URL des catégories : /public/categorie/slug_cat
-RewriteRule ^categorie/([^/]+)/?$ index.php?categorie=$1 [L,QSA]
+# Les règles d'URL rewriting sont maintenant gérées par le .htaccess à la racine.

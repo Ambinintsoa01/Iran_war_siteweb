@@ -89,7 +89,7 @@ include __DIR__ . '/../includes/front_header.php';
                                 <img src="<?php echo h(imageUrl($article['image_principale'])); ?>" 
                                      class="img-fluid w-100 transition-hover" 
                                      style="aspect-ratio: 4/3; object-fit: cover;" 
-                                     alt="">
+                                     alt="<?php echo h($article['alt_img']); ?>">
                             </div>
                             <div class="card-body p-0">
                                 <span class="text-primary fw-bold text-uppercase d-block mb-1" style="font-size: 0.75rem;">

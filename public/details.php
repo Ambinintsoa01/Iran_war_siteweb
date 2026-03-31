@@ -44,7 +44,7 @@ include __DIR__ . '/../includes/front_header.php';
                 <figure class="mb-5">
                     <img src="<?php echo h(imageUrl($article['image_principale'])); ?>" 
                          class="img-fluid w-100 shadow-sm" 
-                         style="max-height: 600px; object-fit: cover; border-radius: 4px;" alt="">
+                         style="max-height: 600px; object-fit: cover; border-radius: 4px;" alt="<?php echo h($article['alt_img']); ?>">
                 </figure>
             <?php endif; ?>
 
