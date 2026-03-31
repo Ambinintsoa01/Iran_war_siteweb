@@ -11,10 +11,10 @@ require_once '../../includes/config.php';
 $pdo = getPDO();
 $sidebarBaseUrl = '../';
 
-$categoriesStmt = $pdo->query('SELECT nom, slug_cat FROM categorie ORDER BY nom ASC LIMIT 6');
+$categoriesStmt = $pdo->query('SELECT nom, slug_cat FROM Categorie ORDER BY nom ASC LIMIT 6');
 $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
 
-$articleStmt = $pdo->query('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN categorie c ON c.categorie_id = a.id_categorie ORDER BY a.date_publication DESC, a.article_id DESC');
+$articleStmt = $pdo->query('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN Categorie c ON c.categorie_id = a.id_categorie ORDER BY a.date_publication DESC, a.article_id DESC');
 $articles = $articleStmt->fetchAll(PDO::FETCH_ASSOC);
 
 function h($value) {

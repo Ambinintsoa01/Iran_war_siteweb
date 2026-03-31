@@ -2,15 +2,23 @@
 
 require_once __DIR__ . '/config.php';
 
-define('BASE_PATH', '/Iran_war_website');
+// Dans le conteneur Docker, le site est servi à la racine (http://localhost/)
+// donc on laisse BASE_PATH vide pour que les URLs commencent par "/".
+define('BASE_PATH', '');
 
 function baseUrl(string $path = ''): string {
-    $base = rtrim(BASE_PATH, '/');
+    $base = trim(BASE_PATH, '/');
     $suffix = ltrim($path, '/');
+
+    // Chemin racine
     if ($suffix === '') {
-        return $base === '' ? '/' : $base . '/';
+        return $base === '' ? '/' : '/' . $base . '/';
     }
-    return ($base === '' ? '' : $base . '/') . $suffix;
+
+    // URL absolue à partir de la racine
+    return $base === ''
+        ? '/' . $suffix
+        : '/' . $base . '/' . $suffix;
 }
 
 function frontUrl(string $path = ''): string {

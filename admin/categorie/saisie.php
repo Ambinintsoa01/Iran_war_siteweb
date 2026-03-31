@@ -45,7 +45,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Le slug ne peut pas être vide.';
     }
 
-    $stmt = $pdo->prepare('SELECT COUNT(*) FROM categorie WHERE slug_cat = ?');
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM Categorie WHERE slug_cat = ?');
     $stmt->execute([$slug]);
     $existing = (int) $stmt->fetchColumn();
     if ($existing > 0) {
@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $insert = $pdo->prepare('INSERT INTO categorie (nom, slug_cat) VALUES (:nom, :slug)');
+        $insert = $pdo->prepare('INSERT INTO Categorie (nom, slug_cat) VALUES (:nom, :slug)');
         $insert->execute([
             ':nom' => $nom,
             ':slug' => $slug

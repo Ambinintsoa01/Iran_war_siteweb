@@ -160,34 +160,34 @@ CREATE TABLE IF NOT EXISTS menu (
     nom VARCHAR(255) NOT NULL,
     description VARCHAR(255),
     slug_menu VARCHAR(255) NOT NULL,
-    level INT NOT NULL DEFAULT 1
+    level INT NOT NULL DEFAULT 1,
+    menu_mere VARCHAR(255)
 );
 
-INSERT INTO menu (menu_id, nom, description, slug_menu, level) VALUES 
-('MENU-1', 'Dashboard', 'Tableau de bord principal', 'dashboard', 1),
+-- Hiérarchie des menus (menu_mere référence le menu parent)
+INSERT INTO menu (menu_id, nom, description, slug_menu, level, menu_mere) VALUES 
+('MENU-1', 'Dashboard', 'Tableau de bord principal', 'dashboard', 1, NULL),
 
-('MENU-2', 'Articles', 'Gestion des articles', 'articles', 1),
-('MENU-3', 'Liste articles', 'Liste des articles', 'liste', 2),
-('MENU-4', 'Saisie article', 'Saisie d''un nouvel article', 'saisie', 2),
+('MENU-2', 'Articles', 'Gestion des articles', 'articles', 1, NULL),
+('MENU-3', 'Liste articles', 'Liste des articles', 'liste', 2, 'MENU-2'),
+('MENU-4', 'Saisie article', 'Saisie d''un nouvel article', 'saisie', 2, 'MENU-2'),
 
-('MENU-5', 'Catégories', 'Gestion des catégories', 'categories', 1),
-('MENU-6', 'Liste catégories', 'Liste des catégories', 'liste', 2),
-('MENU-7', 'Create catégories', 'Création d''une nouvelle catégorie', 'saisie', 2),
+('MENU-5', 'Catégories', 'Gestion des catégories', 'categories', 1, NULL),
+('MENU-6', 'Liste catégories', 'Liste des catégories', 'liste', 2, 'MENU-5'),
+('MENU-7', 'Create catégories', 'Création d''une nouvelle catégorie', 'saisie', 2, 'MENU-5'),
 
-('MENU-8', 'Utilisateurs', 'Gestion des utilisateurs', 'utilisateurs', 1),
-('MENU-9', 'Liste utilisateurs', 'Liste des utilisateurs', 'liste', 2),
-('MENU-10', 'Saisie utilisateur', 'Saisie d''un nouvel utilisateur', 'saisie', 2);
+('MENU-8', 'Utilisateurs', 'Gestion des utilisateurs', 'utilisateurs', 1, NULL),
+('MENU-9', 'Liste utilisateurs', 'Liste des utilisateurs', 'liste', 2, 'MENU-8'),
+('MENU-10', 'Saisie utilisateur', 'Saisie d''un nouvel utilisateur', 'saisie', 2, 'MENU-8');
 
 -- 4) 29-03-2026-data.sql
 -- (corrigé pour correspondre au schéma user)
 INSERT INTO user (user_id, email, password) VALUES ('USR-1', 'admin@gmail.com', 'admin!@#123');
 
 -- 5) 30-03-2026-data.sql
-INSERT INTO menu (menu_id, nom, description, slug_menu, level) VALUES
-('MENU-11', 'Preview', 'Preview', 'preview', 1);
+INSERT INTO menu (menu_id, nom, description, slug_menu, level, menu_mere) VALUES
+('MENU-11', 'Preview', 'Preview', 'preview', 1, NULL);
 
 -- 6) 30-03-2026-update.sql
-ALTER TABLE menu ADD COLUMN menu_mere VARCHAR(255);
-
 ALTER TABLE article ADD COLUMN alt_img VARCHAR(255);
 

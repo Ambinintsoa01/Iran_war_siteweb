@@ -40,6 +40,16 @@ function buildMenu($menus) {
 }
 
 $menuTree = buildMenu($menus);
+
+// Mappe certains slugs vers les dossiers réels
+function adminMenuDir(string $slug): string {
+    switch ($slug) {
+        case 'categories':
+            return 'categorie';
+        default:
+            return $slug;
+    }
+}
 ?>
 
 <aside class="sidebar">
@@ -47,6 +57,7 @@ $menuTree = buildMenu($menus);
     <nav>
         <ul>
             <?php foreach ($menuTree as $menu): ?>
+                <?php $dir = adminMenuDir($menu['slug_menu']); ?>
                 <li>
                     <?php if (!empty($menu['children'])): ?>
                         <a href="#" onclick="toggleSubmenu('submenu-<?php echo $menu['slug_menu']; ?>'); return false;">
@@ -54,11 +65,21 @@ $menuTree = buildMenu($menus);
                         </a>
                         <ul id="submenu-<?php echo $menu['slug_menu']; ?>" class="submenu" style="display: none;">
                             <?php foreach ($menu['children'] as $child): ?>
-                                <li><a href="<?php echo $sidebarBaseUrl . $menu['slug_menu']; ?>/<?php echo $child['slug_menu']; ?>.php"><?php echo $child['nom']; ?></a></li>
+                                <li>
+                                    <a href="<?php echo $sidebarBaseUrl . $dir; ?>/<?php echo $child['slug_menu']; ?>.php"><?php echo $child['nom']; ?></a>
+                                </li>
                             <?php endforeach; ?>
                         </ul>
                     <?php else: ?>
-                        <a href="<?php echo $sidebarBaseUrl . $menu['slug_menu']; ?>.php"><?php echo $menu['nom']; ?></a>
+                        <?php
+                            // Cas particulier : Preview pointe vers admin/preview/preview.php
+                            if ($menu['slug_menu'] === 'preview') {
+                                $href = $sidebarBaseUrl . 'preview/preview.php';
+                            } else {
+                                $href = $sidebarBaseUrl . $dir . '.php';
+                            }
+                        ?>
+                        <a href="<?php echo $href; ?>"><?php echo $menu['nom']; ?></a>
                     <?php endif; ?>
                 </li>
             <?php endforeach; ?>

@@ -17,7 +17,7 @@ $pdo = getPDO();
 $stmt = $pdo->query("SELECT COUNT(*) as total_articles FROM article");
 $total_articles = $stmt->fetch()['total_articles'];
 
-$stmt = $pdo->query("SELECT COUNT(*) as total_categories FROM categorie");
+$stmt = $pdo->query("SELECT COUNT(*) as total_categories FROM Categorie");
 $total_categories = $stmt->fetch()['total_categories'];
 
 $stmt = $pdo->query("SELECT COUNT(*) as total_users FROM user");

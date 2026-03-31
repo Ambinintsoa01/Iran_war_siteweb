@@ -20,7 +20,7 @@ $successMessages = [
     'deleted' => 'Article supprimé avec succès.'
 ];
 
-$stmt = $pdo->query("SELECT a.article_id, a.titre, a.slug, a.date_publication, c.nom AS categorie_nom FROM article a LEFT JOIN categorie c ON a.id_categorie = c.categorie_id ORDER BY a.date_publication DESC");
+$stmt = $pdo->query("SELECT a.article_id, a.titre, a.slug, a.date_publication, c.nom AS categorie_nom FROM article a LEFT JOIN Categorie c ON a.id_categorie = c.categorie_id ORDER BY a.date_publication DESC");
 $articles = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

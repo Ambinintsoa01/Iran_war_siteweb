@@ -21,7 +21,7 @@ $successMessages = [
     'deleted' => 'Catégorie supprimée avec succès.'
 ];
 
-$stmt = $pdo->query('SELECT categorie_id, nom, slug_cat FROM categorie ORDER BY nom ASC');
+$stmt = $pdo->query('SELECT categorie_id, nom, slug_cat FROM Categorie ORDER BY nom ASC');
 $categories = $stmt->fetchAll(PDO::FETCH_ASSOC);
 ?>
 

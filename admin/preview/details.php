@@ -11,7 +11,7 @@ require_once '../../includes/config.php';
 $pdo = getPDO();
 $sidebarBaseUrl = '../';
 
-$categoriesStmt = $pdo->query('SELECT nom, slug_cat FROM categorie ORDER BY nom ASC LIMIT 6');
+$categoriesStmt = $pdo->query('SELECT nom, slug_cat FROM Categorie ORDER BY nom ASC LIMIT 6');
 $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $slugParam = trim($_GET['slug'] ?? '');
@@ -19,13 +19,13 @@ $idParam = trim($_GET['id'] ?? '');
 
 function fetchArticle(PDO $pdo, string $slugParam, string $idParam): ?array {
     if ($idParam !== '' && ctype_digit($idParam)) {
-        $stmt = $pdo->prepare('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN categorie c ON c.categorie_id = a.id_categorie WHERE a.article_id = ? LIMIT 1');
+        $stmt = $pdo->prepare('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN Categorie c ON c.categorie_id = a.id_categorie WHERE a.article_id = ? LIMIT 1');
         $stmt->execute([$idParam]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) { return $row; }
     }
     if ($slugParam !== '') {
-        $stmt = $pdo->prepare('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN categorie c ON c.categorie_id = a.id_categorie WHERE a.slug = ? LIMIT 1');
+        $stmt = $pdo->prepare('SELECT a.*, c.nom AS categorie_nom, c.slug_cat FROM article a LEFT JOIN Categorie c ON c.categorie_id = a.id_categorie WHERE a.slug = ? LIMIT 1');
         $stmt->execute([$slugParam]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         if ($row) { return $row; }

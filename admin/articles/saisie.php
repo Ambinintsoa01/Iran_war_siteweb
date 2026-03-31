@@ -39,7 +39,7 @@ function generateImageId(): string {
 $pdo = getPDO();
 $sidebarBaseUrl = '../';
 
-$categoriesStmt = $pdo->query('SELECT categorie_id, nom FROM categorie ORDER BY nom ASC');
+$categoriesStmt = $pdo->query('SELECT categorie_id, nom FROM Categorie ORDER BY nom ASC');
 $categories = $categoriesStmt->fetchAll(PDO::FETCH_ASSOC);
 
 $errors = [];
