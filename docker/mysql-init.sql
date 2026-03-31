@@ -1,5 +1,8 @@
 -- Init MySQL from raw bdd scripts
 
+-- Important : forcer le client à parler en UTF-8 dès l'init
+SET NAMES utf8mb4 COLLATE utf8mb4_unicode_ci;
+
 -- 1) 29-03-2026-script.sql
 CREATE DATABASE IF NOT EXISTS Iran_War;
 USE Iran_War;

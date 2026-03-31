@@ -1,0 +1,144 @@
+/* Configuration générale */
+:root {
+    --primary-color: #000;
+    --accent-color: #2b41e2; /* Bleu PaperMag */
+    --text-muted: #666;
+    --border-color: #eee;
+    --font-main: 'Playfair Display', serif; /* À ajouter dans votre header via Google Fonts */
+    --font-sans: 'Inter', sans-serif;
+}
+
+body {
+    font-family: var(--font-sans);
+    background-color: #fff;
+    color: #1a1a1a;
+    margin: 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Section Hero / Mise en avant */
+.featured-grid {
+    margin-bottom: 50px;
+    border-bottom: 1px solid var(--border-color);
+    padding-bottom: 40px;
+}
+
+.main-story a {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 30px;
+    text-decoration: none;
+    color: inherit;
+}
+
+.main-story img {
+    width: 100%;
+    height: 450px;
+    object-fit: cover;
+}
+
+.main-story h1 {
+    font-family: var(--font-main);
+    font-size: 2.5rem;
+    line-height: 1.1;
+    margin: 15px 0;
+}
+
+/* Tags et Meta */
+.category-tag {
+    color: var(--accent-color);
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 0.75rem;
+    letter-spacing: 1px;
+}
+
+.meta {
+    color: var(--text-muted);
+    font-size: 0.85rem;
+    margin-top: 10px;
+}
+
+/* Barre de filtrage */
+.recent-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 2px solid #000;
+    margin-bottom: 30px;
+    padding-bottom: 10px;
+}
+
+.recent-header h2 {
+    font-family: var(--font-main);
+    margin: 0;
+}
+
+.filter-nav a {
+    text-decoration: none;
+    color: var(--text-muted);
+    margin-left: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    text-transform: uppercase;
+}
+
+.filter-nav a.active {
+    color: var(--primary-color);
+    border-bottom: 2px solid var(--primary-color);
+}
+
+/* Grille d'articles */
+.articles-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 40px 25px;
+}
+
+.small-card {
+    display: flex;
+    flex-direction: column;
+}
+
+.small-card .card-img img {
+    width: 100%;
+    aspect-ratio: 16/10;
+    object-fit: cover;
+    margin-bottom: 15px;
+}
+
+.small-card h3 {
+    font-family: var(--font-main);
+    font-size: 1.25rem;
+    line-height: 1.3;
+    margin: 10px 0;
+}
+
+.small-card h3 a {
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .main-story a {
+        grid-template-columns: 1fr;
+    }
+    .main-story img {
+        height: 250px;
+    }
+    .recent-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 15px;
+    }
+    .filter-nav a {
+        margin-left: 0;
+        margin-right: 15px;
+    }
+}
