@@ -95,6 +95,34 @@ $title = $pageTitle ?? 'Le Journal';
         /* 3. Utilitaires pour le contenu */
         h1, h2, h3 { font-family: 'Playfair Display', serif; font-weight: 900; }
         a { text-decoration: none; }
+        /* Style pour les petits articles de la sidebar */
+        .sidebar-item {
+            transition: var(--transition-base);
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+
+        /* Effet au survol de la ligne entière */
+        .sidebar-item:hover {
+            background-color: rgba(134, 132, 132, 0.2); /* Fond gris très léger */
+            transform: translateX(5px); /* Petit décalage vers la droite */
+        }
+
+        /* Effet spécifique sur l'image dans la sidebar */
+        .sidebar-item .img-wrapper {
+            border-radius: 4px;
+            transition: var(--transition-base);
+        }
+
+        .sidebar-item:hover .img-wrapper {
+            box-shadow: 0 4px 12px rgba(43, 65, 226, 0.2); /* Ombre bleutée */
+        }
+
+        /* Le titre change de couleur quand on survole n'importe où dans le bloc */
+        .sidebar-item:hover .sidebar-title {
+            color: var(--paper-blue) !important;
+        }
     </style>
 </head>
 <body>
