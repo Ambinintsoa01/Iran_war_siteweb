@@ -55,7 +55,7 @@ include __DIR__ . '/../includes/front_header.php';
                             <img src="<?php echo h(imageUrl($featured['image_principale'])); ?>" 
                                  class="img-fluid shadow-sm w-100" 
                                  style="height: 550px; object-fit: cover;" 
-                                 alt="<?php echo h($featured['titre']); ?>">
+                                 alt="<?php echo h($featured['titre']); ?>" loading="lazy">
                         </a>
                     </div>
                 </section>
@@ -66,11 +66,11 @@ include __DIR__ . '/../includes/front_header.php';
             
             <nav class="nav">
                 <a class="nav-link ps-0 py-1 text-uppercase fw-bold small <?php echo $currentCategory === '' ? 'text-dark border-bottom border-2 border-dark' : 'text-muted'; ?>" 
-                   href="<?php echo frontUrl(''); ?>">Toutes</a>
+                   href="<?php echo frontUrl(''); ?>" <?php echo $currentCategory === '' ? 'aria-current="page"' : ''; ?>>Toutes</a>
                 
                 <?php foreach ($categories as $cat): ?>
                     <a class="nav-link py-1 text-uppercase fw-bold small <?php echo $currentCategory === $cat['slug_cat'] ? 'text-dark border-bottom border-2 border-dark' : 'text-muted'; ?>" 
-                       href="<?php echo frontUrl('categorie/' . h($cat['slug_cat'])); ?>">
+                       href="<?php echo frontUrl('categorie/' . h($cat['slug_cat'])); ?>" <?php echo $currentCategory === $cat['slug_cat'] ? 'aria-current="page"' : ''; ?>>
                         <?php echo h($cat['nom']); ?>
                     </a>
                 <?php endforeach; ?>
@@ -87,10 +87,10 @@ include __DIR__ . '/../includes/front_header.php';
                     <article class="card h-100 border-0 bg-transparent">
                         <a href="<?php echo frontUrl('article/' . h($article['slug'])); ?>" class="text-decoration-none text-dark">
                             <div class="mb-3 overflow-hidden">
-                                <img src="<?php echo h(imageUrl($article['image_principale'])); ?>" 
-                                     class="img-fluid w-100 transition-hover" 
-                                     style="aspect-ratio: 4/3; object-fit: cover;" 
-                                     alt="<?php echo h($article['alt_img']); ?>">
+                                  <img src="<?php echo h(imageUrl($article['image_principale'])); ?>" 
+                                      class="img-fluid w-100 transition-hover" 
+                                      style="aspect-ratio: 4/3; object-fit: cover;" 
+                                      alt="<?php echo h($article['alt_img']); ?>" loading="lazy" decoding="async">
                             </div>
                             <div class="card-body p-0">
                                 <span class="text-primary fw-bold text-uppercase d-block mb-1" style="font-size: 0.75rem;">

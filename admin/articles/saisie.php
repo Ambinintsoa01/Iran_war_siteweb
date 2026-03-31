@@ -56,10 +56,22 @@ $sections = [[
 ]];
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    // Nettoyer les contenus TinyMCE : supprimer les <p> wrapper inutiles
     $titre = $_POST['titre'] ?? '';
-    $slug = trim($_POST['slug'] ?? '');
+    if (!empty($titre)) {
+        $titre = trim($titre);
+        if (preg_match('/^<p>(.*)<\/p>$/s', $titre, $m)) {
+            $titre = $m[1];
+        }
+    }
     $resume = $_POST['resume'] ?? '';
-    $image = '';
+    if (!empty($resume)) {
+        $resume = trim($resume);
+        if (preg_match('/^<p>(.*)<\/p>$/s', $resume, $m)) {
+            $resume = $m[1];
+        }
+    }
+    $slug = trim($_POST['slug'] ?? '');
     $imageAlt = trim($_POST['image_alt'] ?? '');
     $idCategorie = trim($_POST['id_categorie'] ?? '');
     $sousTitres = $_POST['sous_titre'] ?? [];
@@ -351,6 +363,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             branding: false,
             convert_urls: false,
             readonly: false,
+            forced_root_block: false,
+            encoding: 'utf-8',
+            entity_encoding: 'raw',
+            force_p_newlines: false,
+            force_br_newlines: true,
         };
         if (window.tinymce) {
             tinymce.remove();

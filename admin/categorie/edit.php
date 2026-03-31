@@ -29,7 +29,7 @@ if ($categorieId === '') {
     exit();
 }
 
-$stmt = $pdo->prepare('SELECT categorie_id, nom, slug_cat FROM categorie WHERE categorie_id = ?');
+$stmt = $pdo->prepare('SELECT categorie_id, nom, slug_cat FROM Categorie WHERE categorie_id = ?');
 $stmt->execute([$categorieId]);
 $categorie = $stmt->fetch(PDO::FETCH_ASSOC);
 
@@ -60,7 +60,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $errors[] = 'Le slug ne peut pas être vide.';
     }
 
-    $stmt = $pdo->prepare('SELECT COUNT(*) FROM categorie WHERE slug_cat = ? AND categorie_id <> ?');
+    $stmt = $pdo->prepare('SELECT COUNT(*) FROM Categorie WHERE slug_cat = ? AND categorie_id <> ?');
     $stmt->execute([$slug, $categorieId]);
     $existing = (int) $stmt->fetchColumn();
     if ($existing > 0) {
@@ -68,7 +68,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     }
 
     if (empty($errors)) {
-        $update = $pdo->prepare('UPDATE categorie SET nom = :nom, slug_cat = :slug WHERE categorie_id = :id');
+        $update = $pdo->prepare('UPDATE Categorie SET nom = :nom, slug_cat = :slug WHERE categorie_id = :id');
         $update->execute([
             ':nom' => $nom,
             ':slug' => $slug,
