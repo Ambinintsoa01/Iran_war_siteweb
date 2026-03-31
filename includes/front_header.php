@@ -12,7 +12,7 @@ $description = $pageDescription ?? 'Analyses, chronologie et récits autour de l
     <title><?php echo h($title); ?></title>
     <meta name="description" content="<?php echo h($description); ?>">
     
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" crossorigin="anonymous">
     
     <style>
         /* 1. Import des polices (Playfair pour le côté Journal) */
