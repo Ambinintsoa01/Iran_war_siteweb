@@ -1,6 +1,14 @@
 RewriteEngine On
 RewriteBase /
 
+# Exclure admin et login.php de la réécriture
+RewriteCond %{REQUEST_URI} ^/admin [OR]
+RewriteCond %{REQUEST_URI} ^/login.php [OR]
+RewriteCond %{REQUEST_URI} ^/assets [OR]
+RewriteCond %{REQUEST_URI} ^/css [OR]
+RewriteCond %{REQUEST_URI} ^/upload
+RewriteRule ^ - [L]
+
 # Ne pas réécrire si le fichier ou dossier existe
 RewriteCond %{REQUEST_FILENAME} -f [OR]
 RewriteCond %{REQUEST_FILENAME} -d
